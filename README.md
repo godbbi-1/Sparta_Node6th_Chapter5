@@ -22,7 +22,7 @@ foreach (var monster in response.Monsters)
     }
 }
 
-[Tower.js]
+[Tower.cs]
 public void OnAttackMonster(Monster monster)
     {
         // towerId == 0 으로 버그 수정
@@ -39,3 +39,39 @@ public void OnAttackMonster(Monster monster)
             SocketManager.instance.Send(packet);
         }
     }
+
+[GameManager.cs]
+private int _homeHp1 = 100;
+public int homeHp1
+{
+    get => _homeHp1;
+    set
+    {
+        _homeHp1 = value;
+        UIManager.Get<UIGame>().SetHpGauge1(value);
+
+        if (_homeHp1 <= 0)
+        {
+            GamePacket packet = new GamePacket();
+            packet.GameEndRequest = new C2SGameEndRequest() { };
+            SocketManager.instance.Send(packet);
+        }
+    }
+}
+private int _homeHp2 = 100;
+public int homeHp2
+{
+    get => _homeHp2;
+    set
+    {
+        _homeHp2 = value;
+        UIManager.Get<UIGame>().SetHpGauge2(value);
+
+        if (_homeHp2 <= 0)
+        {
+            GamePacket packet = new GamePacket();
+            packet.GameEndRequest = new C2SGameEndRequest() { };
+            SocketManager.instance.Send(packet);
+        }
+    }
+}
