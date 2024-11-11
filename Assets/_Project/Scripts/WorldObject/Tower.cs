@@ -39,15 +39,17 @@ public class Tower : WorldBase<TowerDataSO>
 
     public void OnAttackMonster(Monster monster)
     {
-        if (monster == null) return;
+        // towerId == 0 일 때도 공격 X (버그)
+        if (monster == null || towerId == 0) return;
         var beam = Instantiate(ResourceManager.instance.LoadAsset<BeamObject>("BeamObject"), beamPosition).SetTimer().SetTarget(monster);
         isAttackDelay = true;
         monster.SetDamage(power);
         if (player == ePlayer.me)
         {
             StartCoroutine(OnCooldown());
+
             GamePacket packet = new GamePacket();
-            packet.TowerAttackRequest = new C2STowerAttackRequest() { MonsterId = monster.monsterId, TowerId = towerId };
+            packet.TowerAttackRequest = new C2STowerAttackRequest() { TowerId = towerId, MonsterId = monster.monsterId };
             SocketManager.instance.Send(packet);
         }
     }

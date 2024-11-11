@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using Ironcow.WebSocketPacket;
 using Google.Protobuf;
 using static GamePacket;
-using Unity.VisualScripting;
 using System;
 
 public class SocketManager : TCPSocketManagerBase<SocketManager>
@@ -28,12 +27,6 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
     {
         var response = gamePacket.MatchStartNotification;
         UIManager.Get<UIMain>().OnMatchResult(response);
-    }
-
-    public void AddEnemyTowerNotification(GamePacket gamePacket)
-    {
-        var response = gamePacket.AddEnemyTowerNotification;
-        GameManager.instance.AddTower(new TowerData() { TowerId = response.TowerId, X = response.X, Y = response.Y }, ePlayer.another);
     }
 
     public void EnemyMonsterDeathNotification(GamePacket gamePacket)
@@ -67,6 +60,28 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
         GameManager.instance.homeHp1 = response.BaseHp;
         GameManager.instance.score = response.Score;
         GameManager.instance.gold = response.UserGold;
+
+        // Debug.Log("towers: " + response.Towers);
+
+        // 타워 정보 갱신
+        foreach (var tower in response.Towers)
+        {
+            // Debug.Log($"Checking tower: {tower.TowerId}, X: {tower.X}, Y: {tower.Y}");
+
+            if (!GameManager.instance.GetTower(tower.TowerId))
+            {
+                GameManager.instance.AddTower(new TowerData() { TowerId = tower.TowerId, X = tower.X, Y = tower.Y }, ePlayer.me);
+            }
+        }
+
+        // 몬스터 정보 갱신
+        foreach (var monster in response.Monsters)
+        {
+            if (!GameManager.instance.GetMonster(monster.MonsterId))
+            {
+                GameManager.instance.AddMonster(new MonsterData() { MonsterId = monster.MonsterId, MonsterNumber = monster.MonsterNumber, Level = GameManager.instance.level }, ePlayer.me);
+            }
+        }
     }
 
     public void UpdateBaseHpNotification(GamePacket gamePacket)
@@ -89,6 +104,12 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
     {
         var response = gamePacket.TowerPurchaseResponse;
         GameManager.instance.SetTower(response.TowerId);
+    }
+
+    public void AddEnemyTowerNotification(GamePacket gamePacket)
+    {
+        var response = gamePacket.AddEnemyTowerNotification;
+        GameManager.instance.AddTower(new TowerData() { TowerId = response.TowerId, X = response.X, Y = response.Y }, ePlayer.another);
     }
 
 

@@ -22,6 +22,13 @@ public class GameManager : MonoSingleton<GameManager>
         {
             _homeHp1 = value;
             UIManager.Get<UIGame>().SetHpGauge1(value);
+
+            if (_homeHp1 <= 0)
+            {
+                GamePacket packet = new GamePacket();
+                packet.GameEndRequest = new C2SGameEndRequest() { };
+                SocketManager.instance.Send(packet);
+            }
         }
     }
     private int _homeHp2 = 100;
@@ -32,6 +39,13 @@ public class GameManager : MonoSingleton<GameManager>
         {
             _homeHp2 = value;
             UIManager.Get<UIGame>().SetHpGauge2(value);
+
+            if (_homeHp2 <= 0)
+            {
+                GamePacket packet = new GamePacket();
+                packet.GameEndRequest = new C2SGameEndRequest() { };
+                SocketManager.instance.Send(packet);
+            }
         }
     }
 
@@ -53,7 +67,7 @@ public class GameManager : MonoSingleton<GameManager>
         set
         {
             _score = value;
-            if(topScore < _score)
+            if (topScore < _score)
             {
                 topScore = _score;
             }
@@ -172,13 +186,13 @@ public class GameManager : MonoSingleton<GameManager>
         for (int i = 0; i < 4; i++)
         {
             angle = Util.Random(i == 0 ? -45f : 15, i == 0 ? 45f : 45);
-            if(i == 3)
+            if (i == 3)
             {
                 var normal = (GameObjects.instance.endPosition.position - roads1.Last().position).normalized;
                 angle = Mathf.Abs(Mathf.Atan2(normal.y, normal.x) * 180 / Mathf.PI);
             }
             isUp = i == 0 ? (angle > 0 ? true : false) : !isUp;
-            for(int j = 0; j < (i < 3 ? 6 : 10); j++)
+            for (int j = 0; j < (i < 3 ? 6 : 10); j++)
             {
                 var newRoad = Instantiate(roadPrefab);
                 newRoad.transform.localEulerAngles = new Vector3(0, 0, i == 0 ? angle : angle * (isUp ? 1 : -1));
@@ -186,7 +200,7 @@ public class GameManager : MonoSingleton<GameManager>
                     (i != 0 && j == 0 ? roads1.Last().position :
                     roads1.Last().position + roads1.Last().right * width);
                 roads1.Add(newRoad.transform);
-                if(j == 5) newRoad.GetComponent<CircleCollider2D>().enabled = false;
+                if (j == 5) newRoad.GetComponent<CircleCollider2D>().enabled = false;
             }
         }
     }
@@ -282,7 +296,7 @@ public class GameManager : MonoSingleton<GameManager>
     IEnumerator MultiGameLoop()
     {
         topScore = playerData.HighScore;
-        for(int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++)
         {
             var gameState = i == 0 ? playerData : opponentData;
             var gameObjects = i == 0 ? playerObjects : opponentObjects;
@@ -295,7 +309,7 @@ public class GameManager : MonoSingleton<GameManager>
                     var dist = Vector3.Distance(gameState.MonsterPath[j].ToVector3(), gameState.MonsterPath[j + 1].ToVector3());
                     count = (int)(dist / 30f);
                 }
-                AddRoad(gameState.MonsterPath[j], count > 0 ? gameState.MonsterPath[j+1] : null, gameObjects.roadParent, (ePlayer)i, count);
+                AddRoad(gameState.MonsterPath[j], count > 0 ? gameState.MonsterPath[j + 1] : null, gameObjects.roadParent, (ePlayer)i, count);
             }
             var roads = i == 0 ? roads1 : roads2;
             gameObjects.endPosition.position = roads.Last().position;
@@ -362,10 +376,39 @@ public class GameManager : MonoSingleton<GameManager>
 
     public void OnAttackMonster(int towerId, int monsterId)
     {
-        var targetTower = towers.Find(obj => obj.towerId ==  towerId);
+        var targetTower = towers.Find(obj => obj.towerId == towerId);
         var targetMonster = monsters.Find(obj => obj.monsterId == monsterId);
-        if(targetMonster != null && targetTower != null)
+        if (targetMonster != null && targetTower != null)
             targetTower.OnAttackMonster(targetMonster);
     }
 
+    public void ClearTower()
+    {
+        towers.Clear();
+    }
+
+    public void ClearMonster()
+    {
+        monsters.Clear();
+    }
+
+    public List<Tower> GetTowers()
+    {
+        return towers;
+    }
+
+    public List<Monster> GetMonsters()
+    {
+        return monsters;
+    }
+
+    public Tower GetTower(int towerId)
+    {
+        return towers.FirstOrDefault(tower => tower.towerId == towerId);
+    }
+
+    public Monster GetMonster(int monsterId)
+    {
+        return monsters.FirstOrDefault(monster => monster.monsterId == monsterId);
+    }
 }
