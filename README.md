@@ -4,7 +4,8 @@
 
 ## StateSyncNotification
 
-// 타워 정보 갱신
+```bash
+# 타워 정보 갱신
 foreach (var tower in response.Towers)
 {
     // Debug.Log($"Checking tower: {tower.TowerId}, X: {tower.X}, Y: {tower.Y}");
@@ -14,8 +15,10 @@ foreach (var tower in response.Towers)
         GameManager.instance.AddTower(new TowerData() { TowerId = tower.TowerId, X = tower.X, Y = tower.Y }, ePlayer.me);
     }
 }
+```
 
-// 몬스터 정보 갱신
+```bash
+# 몬스터 정보 갱신
 foreach (var monster in response.Monsters)
 {
     if (!GameManager.instance.GetMonster(monster.MonsterId))
@@ -23,7 +26,10 @@ foreach (var monster in response.Monsters)
         GameManager.instance.AddMonster(new MonsterData() { MonsterId = monster.MonsterId, MonsterNumber = monster.MonsterNumber, Level = GameManager.instance.level }, ePlayer.me);
     }
 }
+```
 
+```bash
+# 타워 공격 (버그 수정)
 [Tower.cs]
 public void OnAttackMonster(Monster monster)
     {
@@ -41,7 +47,10 @@ public void OnAttackMonster(Monster monster)
             SocketManager.instance.Send(packet);
         }
     }
+```
 
+```bash
+# 홈 체력 갱신
 [GameManager.cs]
 private int _homeHp1 = 100;
 public int homeHp1
@@ -77,3 +86,4 @@ public int homeHp2
         }
     }
 }
+```
