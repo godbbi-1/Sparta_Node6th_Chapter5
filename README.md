@@ -4,8 +4,9 @@
 
 ## StateSyncNotification
 
-```bash
 # 타워 정보 갱신
+
+```bash
 foreach (var tower in response.Towers)
 {
     // Debug.Log($"Checking tower: {tower.TowerId}, X: {tower.X}, Y: {tower.Y}");
@@ -17,8 +18,9 @@ foreach (var tower in response.Towers)
 }
 ```
 
-```bash
 # 몬스터 정보 갱신
+
+```bash
 foreach (var monster in response.Monsters)
 {
     if (!GameManager.instance.GetMonster(monster.MonsterId))
@@ -28,8 +30,9 @@ foreach (var monster in response.Monsters)
 }
 ```
 
-```bash
 # 타워 공격 (버그 수정)
+
+```bash
 [Tower.cs]
 public void OnAttackMonster(Monster monster)
     {
@@ -49,8 +52,9 @@ public void OnAttackMonster(Monster monster)
     }
 ```
 
-```bash
 # 홈 체력 갱신
+
+```bash
 [GameManager.cs]
 private int _homeHp1 = 100;
 public int homeHp1
