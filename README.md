@@ -1,5 +1,7 @@
 # Sparta_Node6th_Chapter5
 
+# 회원가입 버튼 [로그인] => [회원가입]
+
 ## StateSyncNotification
 
 // 타워 정보 갱신
