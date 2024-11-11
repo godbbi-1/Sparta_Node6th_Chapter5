@@ -21,3 +21,21 @@ foreach (var monster in response.Monsters)
         GameManager.instance.AddMonster(new MonsterData() { MonsterId = monster.MonsterId, MonsterNumber = monster.MonsterNumber, Level = GameManager.instance.level }, ePlayer.me);
     }
 }
+
+[Tower.js]
+public void OnAttackMonster(Monster monster)
+    {
+        // towerId == 0 으로 버그 수정
+        if (monster == null || towerId == 0) return;
+        var beam = Instantiate(ResourceManager.instance.LoadAsset<BeamObject>("BeamObject"), beamPosition).SetTimer().SetTarget(monster);
+        isAttackDelay = true;
+        monster.SetDamage(power);
+        if (player == ePlayer.me)
+        {
+            StartCoroutine(OnCooldown());
+
+            GamePacket packet = new GamePacket();
+            packet.TowerAttackRequest = new C2STowerAttackRequest() { TowerId = towerId, MonsterId = monster.monsterId };
+            SocketManager.instance.Send(packet);
+        }
+    }
