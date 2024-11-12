@@ -63,7 +63,7 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
 
         // Debug.Log("towers: " + response.Towers);
 
-        // Å¸¿ö Á¤º¸ °»½Å
+        // íƒ€ì›Œ ì •ë³´ ê°±ì‹ 
         foreach (var tower in response.Towers)
         {
             // Debug.Log($"Checking tower: {tower.TowerId}, X: {tower.X}, Y: {tower.Y}");
@@ -74,7 +74,8 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
             }
         }
 
-        // ¸ó½ºÅÍ Á¤º¸ °»½Å
+        /*
+        // ëª¬ìŠ¤í„° ì •ë³´ ê°±ì‹ 
         foreach (var monster in response.Monsters)
         {
             if (!GameManager.instance.GetMonster(monster.MonsterId))
@@ -82,6 +83,7 @@ public class SocketManager : TCPSocketManagerBase<SocketManager>
                 GameManager.instance.AddMonster(new MonsterData() { MonsterId = monster.MonsterId, MonsterNumber = monster.MonsterNumber, Level = GameManager.instance.level }, ePlayer.me);
             }
         }
+        */
     }
 
     public void UpdateBaseHpNotification(GamePacket gamePacket)
